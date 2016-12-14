@@ -73,6 +73,28 @@ function update_flowchart() {
     flowchart_graph.update();
 }
 
+$(document).ready(
+    function(){
+        $('#domaintable').dataTable(
+            {
+                "ajax":{
+                    url: '/table.json',
+                    dataSrc: ''
+                },
+                "columns":
+                [
+                    {"data": "id"},
+                    {"data": "times"}
+                ]
+            }
+        )
+    }
+)
+
+
+
+
+
 setInterval(
     function () {
         update_flowchart();
