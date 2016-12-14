@@ -1,0 +1,57 @@
+<html>
+<meta charset="utf-8">
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="./js/d3.layout.cloud.js"></script>
+
+<body>
+
+</body>
+
+<script>
+var wordlist;
+d3.json("word_data.json", function(error, json) {
+  if (error) throw error;
+  wordlist = json;
+  console.log(wordlist);
+  var color = d3.scale.linear()
+    .domain([0,1,2,3,4,5,6,10,15,20,100])
+    .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
+var fontSize = d3.scale.pow().exponent(5).domain([0,1]).range([10,80]);
+var layout = d3.layout.cloud().size([800, 300])
+    .words(wordlist)
+    .padding(1)
+    .rotate(0)
+    .fontSize(function(d) { return fontSize(d.frequence); })
+    .text(function(d){return d.word;})
+    .on("end", draw);
+
+
+    layout.start();
+
+    function draw(words) {
+    d3.select("body").append("svg")
+        .attr("width", 850)
+        .attr("height", 350)
+        .attr("class", "wordcloud")
+        .append("g")
+        .attr("transform", "translate(320,200)")
+        .selectAll("text")
+        .data(words)
+        .enter().append("text")
+        .style("font-size", function(d) { return d.size + "px"; })
+        .style("fill", function(d) { return color(0); })
+        .attr("transform", function(d) {
+            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+        })
+        .text(function(d) { return d.text; });
+}
+});
+
+
+
+</script>
+
+
+
+</html>
