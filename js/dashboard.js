@@ -1,15 +1,16 @@
 var flowchart_data = [[]];
 var flowchart_random = new Rickshaw.Fixtures.RandomData(150);
 var wordcloud_list;
+var time = new Rickshaw.Fixtures.Time();
 
 d3.json("word_data.json", function (error, json) {
     if (error) throw error;
     wordcloud_list = json;
     var wordcloud_color = d3.scale.linear()
-        .domain([0, 1, 2, 3, 4, 5, 6, 10, 15, 20, 100])
-        .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
+        .domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        .range(["#9fc", "#6fc", "#0f9", "#6f9", "#6f6", "#9f6", "#cf3", "#ff0", "#f90", "#f60", "#c00"]);
     var wordcloud_fontSize = d3.scale.pow().exponent(5).domain([0, 1]).range([10, 80]);
-    var wordcloud_layout = d3.layout.cloud().size([600, 400]) // width,height
+    var wordcloud_layout = d3.layout.cloud().size([$("#wordcloud").width(), 400]) // width,height
         .words(wordcloud_list)
         .padding(1)
         .rotate(0)
@@ -21,17 +22,17 @@ d3.json("word_data.json", function (error, json) {
 
     function draw(words) {
         d3.select("#wordcloud").append("svg")
-            .attr("width", 650)
+            .attr("width", $("#wordcloud").width()+50)
             .attr("height", 450)
             .attr("class", "wordcloud")
             .append("g")
-            .attr("transform", "translate(300,200)")
+            .attr("transform", "translate("+ $("#wordcloud").width()/2 + ",200)")
             .selectAll("text")
             .data(words)
             .enter().append("text")
             .attr("text-anchor","middle")
             .style("font-size", function (d) { return d.size + "px"; })
-            .style("fill", function (d) { return wordcloud_color(0); })
+            .style("fill", function (d) { return wordcloud_color(Math.floor((d.size-10)/7)); })
             .attr("transform", function (d) {
                 return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
@@ -50,8 +51,8 @@ for (var i = 0; i < 150; i++) {
 var flowchart_graph = new Rickshaw.Graph(
     {
         element: document.querySelector(".flowchart"),
-        width: 600,
-        height: 400,
+        width: $(".flowchart").width(),
+        height: 350,
         renderer: 'line',
         stroke: true,
         preserve: true,
@@ -64,6 +65,21 @@ var flowchart_graph = new Rickshaw.Graph(
 
     }
 );
+
+var xAxis = new Rickshaw.Graph.Axis.Time(
+    {
+        graph: flowchart_graph
+    }
+);
+xAxis.render();
+
+var yAxis = new Rickshaw.Graph.Axis.Y(
+{
+    graph: flowchart_graph
+}
+);
+yAxis.render();
+
 
 flowchart_graph.render();
 
@@ -78,7 +94,7 @@ $(document).ready(
         $('#domaintable').dataTable(
             {
                 "ajax":{
-                    url: '/table.json',
+                    url: 'table.json',
                     dataSrc: ''
                 },
                 "columns":
@@ -95,8 +111,8 @@ $(document).ready(
 
 
 
-setInterval(
-    function () {
-        update_flowchart();
-    }, 1000
-);
+//setInterval(
+//    function () {
+//        update_flowchart();
+//    }, 1000
+//);
